@@ -5,6 +5,7 @@ import cors from 'cors'
 import main from '../routes/main.routes.js'
 import alter from '../routes/alter.routes.js'
 import dkps from '../routes/dkp.routes.js'
+import login from '../routes/login.routes.js'
 // importar las rutas arriba.
 
 const SERVER = express()
@@ -18,7 +19,10 @@ SERVER.use(cors())
 SERVER.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*') // ! se puede cambiar  "*" para habilitar todos los puertos y evitar problemas de CORS
   res.header('Access-Control-Allow-Credentials', 'true')
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE')
   next()
 })
@@ -27,6 +31,7 @@ SERVER.use((req, res, next) => {
 SERVER.use('/main', main)
 SERVER.use('/alter', alter)
 SERVER.use('/dkps', dkps)
+SERVER.use('/login', login)
 // Usar rutas importadas arriba:.
 
 // Captura de Errores
