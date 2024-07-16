@@ -1,14 +1,21 @@
 import dotenv from 'dotenv'
 import { Sequelize } from 'sequelize'
 dotenv.config()
-const { /* PORT_DB, USER_DB, PASS_DB, NAME_DB, */ URL_DB } = process.env
+const { PORT_DB, USER_DB, PASS_DB, NAME_DB, URL_DB, LOCAL } = process.env
 
-// const DATA_BASE = new Sequelize(`postgres://${USER_DB}:${PASS_DB}@${PORT_DB}/${NAME_DB}`, {
-//   logging: false
-// })
+let DATA_BASE
 
-const DATA_BASE = new Sequelize(URL_DB, {
-  logging: false
-})
+if (LOCAL) {
+  DATA_BASE = new Sequelize(
+    `postgres://${USER_DB}:${PASS_DB}@${PORT_DB}/${NAME_DB}`,
+    {
+      logging: false
+    }
+  )
+} else {
+  DATA_BASE = new Sequelize(URL_DB, {
+    logging: false
+  })
+}
 
 export default DATA_BASE
