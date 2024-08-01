@@ -3,7 +3,7 @@ import Main from '../models/main.models.js'
 import Alter from '../models/alter.models.js'
 
 export const postDkps = (req, res) => {
-  const { body } = req.body // Accede directamente a req.body
+  const { body } = req.body
 
   parseString(
     body,
@@ -15,11 +15,7 @@ export const postDkps = (req, res) => {
       }
 
       try {
-        // todos los Personajes convertidos a "JSON"
         const allCharacters = result['QDKP2EXPORT-DKP'].PLAYER
-        // seleccionando Personajes MAIN
-        // const mainCharacters = allCharacters.filter((ele) => !ele.main)
-        // const alterCharacters = allCharacters.filter((ele) => ele.main)
         const mainCharacters = []
         const alterCharacters = []
 
@@ -31,64 +27,61 @@ export const postDkps = (req, res) => {
           }
         })
 
-        // ! busca en la lista de Main por nombre para editar su DKP u otra propiedad
-        // ! si no existe lo crea
-        for (const ele of mainCharacters) {
-          const findToEditOne = await Main.findOne({
-            where: { name: ele.name }
-          })
+        const mainPromises = mainCharacters.map(
+          async ({ name, net, class: characterClass }) => {
+            if (!characterClass) {
+              console.error(`Error: class for character ${name} is missing.`)
+              throw new Error(`Missing class for character ${name}`)
+            }
 
-          if (findToEditOne) {
-            await findToEditOne.update({ net: ele.net })
-          } else {
-            console.log(
-              `Usuario Main ${ele.name} no encontrado, creando uno nuevo`
-            )
-            await Main.create(ele) // Crea uno nuevo si no existe
+            const mainCharacter = await Main.findOne({ where: { name } })
+
+            if (mainCharacter) {
+              return mainCharacter.update({ net, class: characterClass })
+            } else {
+              console.log(
+                `Usuario Main ${name} no encontrado, creando uno nuevo`
+              )
+              return Main.create({ name, net, class: characterClass })
+            }
           }
-        }
+        )
 
-        // ! busca alters en la lista Main si existe lo destruye
-        for (const ele of alterCharacters) {
-          const findToDestroyOne = await Main.findOne({
-            where: { name: ele.name }
-          })
+        const alterPromises = alterCharacters.map(
+          async ({ name, class: characterClass }) => {
+            const alterCharacterInMain = await Main.findOne({ where: { name } })
+            if (alterCharacterInMain) {
+              console.log(
+                `Usuario alter ${name} encontrado en lista Main, destruyendo`
+              )
+              await alterCharacterInMain.destroy()
+            }
 
-          if (findToDestroyOne) {
-            console.log(
-              `Usuario alter ${ele.name} encontrado en lista Main, destruyendo`
-            )
-            await findToDestroyOne.destroy()
+            const alterCharacter = await Alter.findOne({ where: { name } })
+            if (!alterCharacter) {
+              console.log(
+                `Usuario Alter ${name} no encontrado, creando uno nuevo`
+              )
+              return Alter.create({ name, class: characterClass })
+            }
           }
-        }
+        )
 
-        // ! Busca alters en la lista de Alters, si no existe lo crea
-        for (const ele of alterCharacters) {
-          const findToDestroyOne = await Alter.findOne({
-            where: { name: ele.name }
-          })
-
-          if (!findToDestroyOne) {
+        const removeMainsFromAlters = mainCharacters.map(async ({ name }) => {
+          const alterCharacter = await Alter.findOne({ where: { name } })
+          if (alterCharacter) {
             console.log(
-              `Usuario Alter ${ele.name} no encontrado, creando uno nuevo`
+              `Usuario main ${name} encontrado en lista Alter, destruyendo`
             )
-            await Alter.create(ele) // Crea uno nuevo si no existe
+            return alterCharacter.destroy()
           }
-        }
+        })
 
-        // ! busca mains en la list Alters, si existe lo destruye
-        for (const ele of mainCharacters) {
-          const findToDestroyOne = await Alter.findOne({
-            where: { name: ele.name }
-          })
-
-          if (findToDestroyOne) {
-            console.log(
-              `Usuario main ${ele.name} encontrado en lista Alter, destruyendo`
-            )
-            await findToDestroyOne.destroy()
-          }
-        }
+        await Promise.all([
+          ...mainPromises,
+          ...alterPromises,
+          ...removeMainsFromAlters
+        ])
 
         res.json({ message: 'Datos procesados correctamente' })
       } catch (error) {
