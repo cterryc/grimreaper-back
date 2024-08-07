@@ -27,8 +27,30 @@ export const postDkps = (req, res) => {
           }
         })
 
+        const copiaAlter = [...alterCharacters]
+
+        copiaAlter.forEach(({ main }, index) => {
+          const matchOneMain = mainCharacters.find(({ name }) => name === main)
+          if (!matchOneMain) {
+            // busco el main del elemento en la lista de alters
+            const matchOneAlter = alterCharacters.find(
+              ({ name }) => name === main
+            )
+            if (matchOneAlter) {
+              alterCharacters[index] = {
+                ...alterCharacters[index],
+                main: matchOneAlter.main
+              }
+            }
+          }
+        })
+
+        console.log('esto es MAIN ==>', mainCharacters)
+        console.log('esto es ALTER ==>', alterCharacters)
+
+        // ! Crea players Mains
         const mainPromises = mainCharacters.map(
-          async ({ name, net, class: characterClass }) => {
+          async ({ name, net, class: characterClass, rank }) => {
             if (!characterClass) {
               console.error(`Error: class for character ${name} is missing.`)
               throw new Error(`Missing class for character ${name}`)
@@ -37,32 +59,37 @@ export const postDkps = (req, res) => {
             const mainCharacter = await Main.findOne({ where: { name } })
 
             if (mainCharacter) {
-              return mainCharacter.update({ net, class: characterClass })
+              return mainCharacter.update({ net, class: characterClass, rank })
             } else {
               console.log(
                 `Usuario Main ${name} no encontrado, creando uno nuevo`
               )
-              return Main.create({ name, net, class: characterClass })
+              return Main.create({ name, net, class: characterClass, rank })
             }
           }
         )
 
         const alterPromises = alterCharacters.map(
-          async ({ name, class: characterClass }) => {
+          async ({ name, class: characterClass, rank, main }) => {
+            const alterCharacter = await Alter.findOne({ where: { name } })
+            if (!alterCharacter) {
+              console.log(
+                `Usuario Alter ${name} no encontrado, creando uno nuevo`
+              )
+              console.log('esto es name ==>', name)
+              return Alter.create({
+                name,
+                class: characterClass,
+                rank,
+                mainPlayername: main
+              })
+            }
             const alterCharacterInMain = await Main.findOne({ where: { name } })
             if (alterCharacterInMain) {
               console.log(
                 `Usuario alter ${name} encontrado en lista Main, destruyendo`
               )
               await alterCharacterInMain.destroy()
-            }
-
-            const alterCharacter = await Alter.findOne({ where: { name } })
-            if (!alterCharacter) {
-              console.log(
-                `Usuario Alter ${name} no encontrado, creando uno nuevo`
-              )
-              return Alter.create({ name, class: characterClass })
             }
           }
         )
