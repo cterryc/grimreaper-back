@@ -1,6 +1,8 @@
 import { parseString } from 'xml2js'
 import Main from '../models/main.models.js'
 import Alter from '../models/alter.models.js'
+import FirstBackUp from '../models/firstBackUp.models.js'
+import SecondBackUp from '../models/secondBackUp.models.js'
 
 export const postDkps = (req, res) => {
   const { body } = req.body
@@ -45,8 +47,13 @@ export const postDkps = (req, res) => {
           }
         })
 
-        console.log('esto es MAIN ==>', mainCharacters)
-        console.log('esto es ALTER ==>', alterCharacters)
+        let createBackUp = false
+        let processFirstBackUp = []
+        let processSecondBackUp = []
+        const getFirstBack = (await Main.findAll()).map((ele) => ele.toJSON())
+        const getSecondBack = (await FirstBackUp.findAll()).map((ele) =>
+          ele.toJSON()
+        )
 
         // ! Crea players Mains
         const mainPromises = mainCharacters.map(
@@ -58,12 +65,20 @@ export const postDkps = (req, res) => {
 
             const mainCharacter = await Main.findOne({ where: { name } })
 
-            if (mainCharacter) {
+            if (mainCharacter && mainCharacter.net !== net) {
+              if (!createBackUp) {
+                console.log('entro en Flase', createBackUp)
+                createBackUp = true
+                await SecondBackUp.truncate()
+                processSecondBackUp = [SecondBackUp.bulkCreate(getSecondBack)]
+                await FirstBackUp.truncate()
+                processFirstBackUp = [FirstBackUp.bulkCreate(getFirstBack)]
+              }
               return mainCharacter.update({ net, class: characterClass, rank })
-            } else {
-              console.log(
-                `Usuario Main ${name} no encontrado, creando uno nuevo`
-              )
+            } else if (!mainCharacter) {
+              // console.log(
+              //   `Usuario Main ${name} no encontrado, creando uno nuevo`
+              // )
               return Main.create({ name, net, class: characterClass, rank })
             }
           }
@@ -73,10 +88,10 @@ export const postDkps = (req, res) => {
           async ({ name, class: characterClass, rank, main }) => {
             const alterCharacter = await Alter.findOne({ where: { name } })
             if (!alterCharacter) {
-              console.log(
-                `Usuario Alter ${name} no encontrado, creando uno nuevo`
-              )
-              console.log('esto es name ==>', name)
+              // console.log(
+              //   `Usuario Alter ${name} no encontrado, creando uno nuevo`
+              // )
+              // console.log('esto es name ==>', name)
               return Alter.create({
                 name,
                 class: characterClass,
@@ -86,9 +101,9 @@ export const postDkps = (req, res) => {
             }
             const alterCharacterInMain = await Main.findOne({ where: { name } })
             if (alterCharacterInMain) {
-              console.log(
-                `Usuario alter ${name} encontrado en lista Main, destruyendo`
-              )
+              // console.log(
+              //   `Usuario alter ${name} encontrado en lista Main, destruyendo`
+              // )
               await alterCharacterInMain.destroy()
             }
           }
@@ -107,7 +122,9 @@ export const postDkps = (req, res) => {
         await Promise.all([
           ...mainPromises,
           ...alterPromises,
-          ...removeMainsFromAlters
+          ...removeMainsFromAlters,
+          ...processFirstBackUp,
+          ...processSecondBackUp
         ])
 
         res.json({ message: 'Datos procesados correctamente' })
