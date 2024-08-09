@@ -85,12 +85,20 @@ export const postDkps = (req, res) => {
         )
 
         const alterPromises = alterCharacters.map(
-          async ({ name, class: characterClass, rank, main }) => {
+          async ({ name, class: characterClass, rank, main, net }) => {
+            console.log(characterClass)
+            const alterCharacterInMain = await Main.findOne({ where: { name } })
+            if (alterCharacterInMain) {
+              console.log(
+                `Usuario alter ${name} encontrado en lista Main, destruyendo`
+              )
+              await alterCharacterInMain.destroy()
+            }
             const alterCharacter = await Alter.findOne({ where: { name } })
             if (!alterCharacter) {
-              // console.log(
-              //   `Usuario Alter ${name} no encontrado, creando uno nuevo`
-              // )
+              console.log(
+                `Usuario Alter ${name} no encontrado, creando uno nuevo`
+              )
               // console.log('esto es name ==>', name)
               return Alter.create({
                 name,
@@ -98,13 +106,14 @@ export const postDkps = (req, res) => {
                 rank,
                 mainPlayername: main
               })
-            }
-            const alterCharacterInMain = await Main.findOne({ where: { name } })
-            if (alterCharacterInMain) {
-              // console.log(
-              //   `Usuario alter ${name} encontrado en lista Main, destruyendo`
-              // )
-              await alterCharacterInMain.destroy()
+            } else {
+              console.log(`Usuario Alter ${name} encontrado, actualizando`)
+              return alterCharacter.update({
+                net,
+                class: characterClass,
+                rank,
+                mainPlayername: main
+              })
             }
           }
         )
