@@ -14,7 +14,8 @@ export const getScrap = async (req, res, next) => {
         mainPlayername: player
       }
     })
-    console.log(altersPlayer)
+    const tojson = await altersPlayer.map((ele) => ele.toJSON())
+    console.log(tojson)
     res.status(200).send(des)
   } catch (error) {
     next(error)

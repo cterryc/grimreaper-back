@@ -3,6 +3,7 @@ import Main from '../models/main.models.js'
 import Alter from '../models/alter.models.js'
 import FirstBackUp from '../models/firstBackUp.models.js'
 import SecondBackUp from '../models/secondBackUp.models.js'
+import { getLastDateAndUpdate } from '../helpers/dateUpdate.helpers.js'
 
 export const postDkps = (req, res) => {
   const { body } = req.body
@@ -67,12 +68,15 @@ export const postDkps = (req, res) => {
 
             if (mainCharacter && mainCharacter.net !== net) {
               if (!createBackUp) {
-                console.log('entro en Flase', createBackUp)
+                console.log('entro en False create BackUp', createBackUp)
                 createBackUp = true
-                await SecondBackUp.truncate()
-                processSecondBackUp = [SecondBackUp.bulkCreate(getSecondBack)]
-                await FirstBackUp.truncate()
-                processFirstBackUp = [FirstBackUp.bulkCreate(getFirstBack)]
+                const newDate = await getLastDateAndUpdate()
+                if (newDate) {
+                  await SecondBackUp.truncate()
+                  processSecondBackUp = [SecondBackUp.bulkCreate(getSecondBack)]
+                  await FirstBackUp.truncate()
+                  processFirstBackUp = [FirstBackUp.bulkCreate(getFirstBack)]
+                }
               }
               return mainCharacter.update({ net, class: characterClass, rank })
             } else if (!mainCharacter) {
@@ -86,7 +90,7 @@ export const postDkps = (req, res) => {
 
         const alterPromises = alterCharacters.map(
           async ({ name, class: characterClass, rank, main, net }) => {
-            console.log(characterClass)
+            // buscando alter dentro de main
             const alterCharacterInMain = await Main.findOne({ where: { name } })
             if (alterCharacterInMain) {
               console.log(
@@ -94,6 +98,8 @@ export const postDkps = (req, res) => {
               )
               await alterCharacterInMain.destroy()
             }
+
+            // verificando si el alter existe para ser creado o actualizado
             const alterCharacter = await Alter.findOne({ where: { name } })
             if (!alterCharacter) {
               console.log(
@@ -107,7 +113,7 @@ export const postDkps = (req, res) => {
                 mainPlayername: main
               })
             } else {
-              console.log(`Usuario Alter ${name} encontrado, actualizando`)
+              // console.log(`Usuario Alter ${name} encontrado, actualizando`)
               return alterCharacter.update({
                 net,
                 class: characterClass,
