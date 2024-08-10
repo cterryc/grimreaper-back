@@ -3,11 +3,17 @@ import DateUpdate from '../models/dateUpdate.models.js'
 export const dayHours = () => {
   const newDate = new Date()
 
+  // Convertir la fecha y hora a la zona horaria de Perú (UTC-5)
+  const utcOffset = -5 * 60 // -5 horas en minutos
+  const peruDate = new Date(
+    newDate.getTime() + (utcOffset + newDate.getTimezoneOffset()) * 60000
+  )
+
   // Obtener las componentes de la fecha
-  const dia = newDate.getDate()
-  const mes = newDate.getMonth() // Los meses comienzan desde 0
-  const horas = newDate.getHours()
-  const minutos = newDate.getMinutes()
+  const dia = peruDate.getDate()
+  const mes = peruDate.getMonth() // Los meses comienzan desde 0
+  const horas = peruDate.getHours()
+  const minutos = peruDate.getMinutes()
 
   const meses = [
     'Enero',
