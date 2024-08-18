@@ -1,6 +1,8 @@
-import { DataTypes } from 'sequelize'
+import pkg from 'sequelize'
 import DATA_BASE from '../config/db.js'
 import Main from './main.models.js'
+
+const { DataTypes } = pkg
 
 const Alter = DATA_BASE.define('alter', {
   name: {
