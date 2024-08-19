@@ -1,40 +1,62 @@
 // import { extractFromHtml } from '@extractus/article-extractor'
 
-import Alter from '../models/alter.models.js'
+import puppeteer from 'puppeteer'
+
+// import Alter from '../models/alter.models.js'
 
 export const getScrap = async (req, res, next) => {
-  const { player } = req.params
-  try {
-    const infoPlayer = await fetch(
-      `https://armory.warmane.com/api/character/${player}/icecrown/summary`
-    )
-    const des = await infoPlayer.json()
-    const altersPlayer = await Alter.findAll({
-      where: {
-        mainPlayername: player
+  const { character } = req.params
+  const urlCharacter = `https://armory.warmane.com/character/${character}/Icecrown/summary`
+
+  // Lanza el navegador
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+
+  // Navega a la URL específica del personaje
+  await page.goto(urlCharacter)
+
+  // Evaluar la página y extraer todos los atributos de las etiquetas <a> y <img>
+  const elementos = await page.evaluate(() => {
+    const left = document.querySelectorAll('.item-left div div a')
+    const right = document.querySelectorAll('.item-right div div a')
+    const bottom = document.querySelectorAll('.item-bottom div div a')
+
+    // Función para extraer atributos de un nodo
+    const extractAttributes = (node) => {
+      const attrs = {}
+      for (const attr of node.attributes) {
+        attrs[attr.name] = attr.value
       }
-    })
-    const tojson = await altersPlayer.map((ele) => ele.toJSON())
-    console.log(tojson)
-    res.status(200).send(des)
-  } catch (error) {
-    next(error)
-  }
+      return attrs
+    }
 
-  // try {
-  //   const article = await extract(scrap)
-  //   console.log(article)
-  //   res.status(200).send({ content: article.content })
-  // } catch (err) {
-  //   console.error(err)
-  // }
+    // Extrae atributos de <a> y <img> (si existe) en los elementos
+    const extractElementsAttributes = (elements) => {
+      return Array.from(elements).map((ele) => {
+        const aAttributes = extractAttributes(ele)
+        const imgElement = ele.querySelector('img')
+        const imgAttributes = imgElement ? extractAttributes(imgElement) : null
 
-  // const rest = await fetch(scrap)
-  // const html = await rest.text()
+        return { ...aAttributes, ...imgAttributes }
+      })
+    }
 
-  // you can do whatever with this raw html here: clean up, remove ads banner, etc
-  // just ensure a html string returned
+    const leftAttributes = extractElementsAttributes(left)
+    const rightAttributes = extractElementsAttributes(right)
+    const bottomAttributes = extractElementsAttributes(bottom)
 
-  // const article = await extractFromHtml(html, scrap)
-  // console.log(article)
+    return {
+      left: leftAttributes,
+      right: rightAttributes,
+      bottom: bottomAttributes
+    }
+  })
+
+  // Cierra el navegador
+  await browser.close()
+
+  // Muestra los atributos extraídos en la consola
+
+  // Devuelve la respuesta JSON con los atributos extraídos
+  res.json(elementos)
 }

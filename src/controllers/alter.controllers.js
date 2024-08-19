@@ -1,4 +1,4 @@
-import Alter from '../models/alter.models.js'
+// import Alter from '../models/alter.models.js'
 
 export const getAlters = (req, res) => {
   console.log('getAlters')
