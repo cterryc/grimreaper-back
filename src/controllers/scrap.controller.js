@@ -1,16 +1,39 @@
 // import { extractFromHtml } from '@extractus/article-extractor'
+import dotenv from 'dotenv'
+import pup from 'puppeteer'
+import chro from 'chrome-aws-lambda'
+import puppeteerCore from 'puppeteer-core'
+dotenv.config()
 
-import puppeteer from 'puppeteer'
+let chrome = {}
+let puppeteer
 
-// import Alter from '../models/alter.models.js'
+if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  chrome = chro
+  puppeteer = puppeteerCore
+} else {
+  puppeteer = pup
+}
 
 export const getScrap = async (req, res, next) => {
+  let options = {}
+
+  if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    options = {
+      args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
+      defaultViewport: chrome.defaultViewport,
+      executablePath: await chrome.executablePath,
+      headless: true,
+      ignoreHTTPSErrors: true
+    }
+  }
+
   try {
     const { character } = req.params
     const urlCharacter = `https://armory.warmane.com/character/${character}/Icecrown/summary`
 
     // Lanza el navegador
-    const browser = await puppeteer.launch()
+    const browser = await puppeteer.launch(options)
     const page = await browser.newPage()
 
     // Navega a la URL específica del personaje
