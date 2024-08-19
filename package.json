@@ -20,6 +20,7 @@
     "morgan": "1.10.0",
     "pg": "8.7.0",
     "pg-hstore": "2.3.4",
+    "puppeteer": "23.1.0",
     "sequelize": "6.6.5",
     "xml2js": "0.6.2"
   },
