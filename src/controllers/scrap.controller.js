@@ -10,10 +10,7 @@ export const getScrap = async (req, res, next) => {
     const urlCharacter = `https://armory.warmane.com/character/${character}/Icecrown/summary`
 
     // Lanza el navegador
-    const browser = await puppeteer.launch({
-      executablePath: '/path/to/your/chrome',
-      cacheDir: '/home/sbx_user1051/.cache/puppeteer'
-    })
+    const browser = await puppeteer.launch()
     const page = await browser.newPage()
 
     // Navega a la URL específica del personaje
