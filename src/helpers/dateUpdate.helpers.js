@@ -12,8 +12,8 @@ export const dayHours = () => {
   // Obtener las componentes de la fecha
   const dia = peruDate.getDate()
   const mes = peruDate.getMonth() // Los meses comienzan desde 0
-  const horas = peruDate.getHours()
-  const minutos = peruDate.getMinutes()
+  let horas = peruDate.getHours()
+  let minutos = peruDate.getMinutes()
 
   const meses = [
     'Enero',
@@ -30,7 +30,11 @@ export const dayHours = () => {
     'Diciembre'
   ]
 
-  // Formatear la fecha como quieras
+  // Asegurar que los minutos y las horas siempre tengan dos dígitos
+  horas = horas < 10 ? `0${horas}` : horas
+  minutos = minutos < 10 ? `0${minutos}` : minutos
+
+  // Formatear la fecha y hora
   const dayMonth = `${dia}-${meses[mes]}`
   const minHours = `${horas}:${minutos}`
 
