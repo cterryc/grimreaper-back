@@ -2,11 +2,12 @@ import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 // importar las rutas aqui abajo
-import main from '../routes/main.routes.js'
+import characters from '../routes/characters.routes.js'
 import alter from '../routes/alter.routes.js'
 import dkps from '../routes/dkp.routes.js'
 import login from '../routes/login.routes.js'
 import scrap from '../routes/scrap.routes.js'
+import main from '../routes/main.routes.js'
 // importar las rutas arriba.
 
 const SERVER = express()
@@ -29,11 +30,12 @@ SERVER.use((req, res, next) => {
 })
 
 // Usar rutas importadas aqui abajo:
-SERVER.use('/main', main)
+SERVER.use('/characters', characters)
 SERVER.use('/alter', alter)
 SERVER.use('/dkps', dkps)
 SERVER.use('/login', login)
 SERVER.use('/scrap', scrap)
+SERVER.use('/main', main)
 // Usar rutas importadas arriba:.
 
 // Captura de Errores

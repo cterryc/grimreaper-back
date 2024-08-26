@@ -1,9 +1,14 @@
 import { Router } from 'express'
-import { getMains, postMains } from '../controllers/main.controllers.js'
+import {
+  getMainsActual,
+  getMainsFirst,
+  getMainsSecond
+} from '../controllers/main.controllers.js'
 
 const main = Router()
 
-main.get('/', getMains)
-main.post('/', postMains)
+main.get('/actual', getMainsActual)
+main.get('/first', getMainsFirst)
+main.get('/second', getMainsSecond)
 
 export default main
