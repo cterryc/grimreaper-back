@@ -8,6 +8,7 @@ import dkps from '../routes/dkp.routes.js'
 import login from '../routes/login.routes.js'
 import scrap from '../routes/scrap.routes.js'
 import main from '../routes/main.routes.js'
+import monitor from '../routes/monitor.routes.js'
 // importar las rutas arriba.
 
 const SERVER = express()
@@ -36,6 +37,7 @@ SERVER.use('/dkps', dkps)
 SERVER.use('/login', login)
 SERVER.use('/scrap', scrap)
 SERVER.use('/main', main)
+SERVER.use('/monitor', monitor)
 // Usar rutas importadas arriba:.
 
 // Captura de Errores
