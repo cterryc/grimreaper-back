@@ -11,17 +11,18 @@ if (LOCAL) {
     `postgres://${USER_DB}:${PASS_DB}@${PORT_DB}/${NAME_DB}`,
     {
       logging: console.log('Local Data Base'),
-      dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  }
+      dialectModule: pg
     }
   )
 } else {
   DATA_BASE = new Sequelize(URL_DB, {
-    logging: console.log('External Data Base')
+    logging: () => console.log('External Data Base'),
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
   })
 }
 
