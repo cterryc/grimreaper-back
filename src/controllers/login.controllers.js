@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 
 export const postLogin = async (req, res, next) => {
   const { user, password } = req.body
-  const admin = 'Lunatik'
+  const admin = 'lunatik'
   const pass = 'Lunatik321'
   const clave = bcrypt.hash(pass, 10, function (_err, hash) {
     console.log('esto es logIN', hash)
