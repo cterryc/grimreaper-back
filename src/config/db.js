@@ -11,7 +11,12 @@ if (LOCAL) {
     `postgres://${USER_DB}:${PASS_DB}@${PORT_DB}/${NAME_DB}`,
     {
       logging: console.log('Local Data Base'),
-      dialectModule: pg
+      dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  }
     }
   )
 } else {
