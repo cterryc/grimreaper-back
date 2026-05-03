@@ -80,11 +80,10 @@ export const postDkps = (req, res) => {
             if (mainCharacter && mainCharacter.net !== net) {
               if (createBackUp && !processFirstBackUp.length) {
                 console.log('Creando backup por ser nuevo dia')
-                const fields = ['name', 'gearscore', 'class', 'net', 'spent', 'total', 'hours', 'rank']
                 await SecondBackUp.truncate()
-                processSecondBackUp = [SecondBackUp.bulkCreate(getSecondBack, { fields })]
+                processSecondBackUp = [SecondBackUp.bulkCreate(getSecondBack, { ignoreDuplicates: true })]
                 await FirstBackUp.truncate()
-                processFirstBackUp = [FirstBackUp.bulkCreate(getFirstBack, { fields })]
+                processFirstBackUp = [FirstBackUp.bulkCreate(getFirstBack, { ignoreDuplicates: true })]
               }
               return mainCharacter.update({ net, class: characterClass, rank, gearscore, spent, total, hours })
             } else if (!mainCharacter) {
