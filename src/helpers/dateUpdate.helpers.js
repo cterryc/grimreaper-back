@@ -58,16 +58,12 @@ export const getLastDateAndUpdate = async () => {
     const lastDate = lastDateToJson.date.split(' ')
 
     if (lastDate[0] !== dayMonth) {
-      console.log('creando Update')
+      console.log('Creando Update por ser nuevo dia')
       await DateUpdate.create({
         date: `${dayMonth} ${minHours}`
       })
       return true
     }
-    await DateUpdate.create({
-      date: `${dayMonth} ${minHours}`
-    })
-    console.log('no se creo Update, y actualizando Original DB')
     return false
   } catch (error) {
     throw new Error(error)
