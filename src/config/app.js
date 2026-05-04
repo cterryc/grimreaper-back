@@ -9,6 +9,7 @@ import login from '../routes/login.routes.js'
 import main from '../routes/main.routes.js'
 import monitor from '../routes/monitor.routes.js'
 import cron from '../routes/cron.routes.js'
+import admin from '../routes/admin.routes.js'
 // importar las rutas arriba.
 
 const SERVER = express()
@@ -37,6 +38,7 @@ SERVER.use('/dkps', dkps)
 SERVER.use('/login', login)
 SERVER.use('/main', main)
 SERVER.use('/monitor', monitor)
+SERVER.use('/admin', admin)
 SERVER.use('/', cron)
 // Usar rutas importadas arriba:.
 

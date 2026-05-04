@@ -468,6 +468,161 @@ Content-Type: application/json
 
 ---
 
+## Admin
+
+Solo el usuario **Lunatik** puede realizar estas operaciones. Requiere autenticación (`user` y `password` en body).
+
+### GET `/admin`
+
+Lista todos los administradores.
+
+#### Request
+
+**Body:**
+```json
+{
+  "user": "Lunatik",
+  "password": "Lunatik321"
+}
+```
+
+#### Response
+
+**200 OK**
+```json
+[
+  {
+    "username": "Lunatik",
+    "email": "admin@example.com"
+  }
+]
+```
+
+**403 Forbidden**
+```json
+{
+  "error": "Solo Lunatik puede realizar esta accion"
+}
+```
+
+---
+
+### POST `/admin`
+
+Crea un nuevo administrador.
+
+#### Request
+
+**Body:**
+```json
+{
+  "user": "Lunatik",
+  "password": "Lunatik321",
+  "username": "nuevoAdmin",
+  "password": "password123",
+  "email": "nuevo@example.com"
+}
+```
+
+#### Response
+
+**201 Created**
+```json
+{
+  "username": "nuevoAdmin",
+  "email": "nuevo@example.com"
+}
+```
+
+**400 Bad Request - Faltan campos requeridos**
+```json
+{
+  "error": "Username y password son requeridos"
+}
+```
+
+**400 Bad Request - Usuario ya existe**
+```json
+{
+  "error": "El usuario ya existe"
+}
+```
+
+---
+
+### PUT `/admin/:username`
+
+Actualiza un administrador.
+
+#### Request
+
+**Body:**
+```json
+{
+  "user": "Lunatik",
+  "password": "Lunatik321",
+  "password": "nuevoPassword",
+  "email": "nuevo@example.com"
+}
+```
+
+#### Response
+
+**200 OK**
+```json
+{
+  "message": "Usuario actualizado correctamente"
+}
+```
+
+**404 Not Found**
+```json
+{
+  "error": "Usuario no encontrado"
+}
+```
+
+---
+
+### DELETE `/admin/:username`
+
+Elimina un administrador.
+
+#### Request
+
+**Body:**
+```json
+{
+  "user": "Lunatik",
+  "password": "Lunatik321"
+}
+```
+
+#### Response
+
+**200 OK**
+```json
+{
+  "message": "Usuario nuevoAdmin eliminado"
+}
+```
+
+**400 Bad Request - No se puede eliminar a Lunatik**
+```json
+{
+  "error": "No se puede eliminar al usuario Lunatik"
+}
+```
+
+**404 Not Found**
+```json
+{
+  "error": "Usuario no encontrado"
+}
+```
+
+---
+
 ## Main
 
 ### GET `/main/actual`
