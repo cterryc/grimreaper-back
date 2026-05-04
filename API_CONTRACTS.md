@@ -339,8 +339,45 @@ Content-Type: application/json
 
 #### Notas
 
-- El usuario y contraseña están hardcodeados en el controlador
-- Credenciales válidas: `user: "lunatik"`, `password: "Lunatik321"`
+- El usuario y contraseña se guardan en la base de datos (tabla `Admin`)
+- Credenciales válidas por defecto: `user: "lunatik"`, `password: "Lunatik321"`
+
+---
+
+### POST `/login/change-password`
+
+Cambia la contraseña de un administrador.
+
+#### Request
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "user": "lunatik",
+  "newPassword": "nuevaContraseña123"
+}
+```
+
+#### Response
+
+**200 OK - Éxito**
+```json
+{
+  "message": "Contraseña actualizada correctamente"
+}
+```
+
+**404 Not Found - Usuario no encontrado**
+```json
+{
+  "error": "Usuario no encontrado"
+}
+```
 
 ---
 

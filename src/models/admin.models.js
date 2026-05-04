@@ -1,8 +1,10 @@
-import { DataTypes } from 'sequelize'
+import pkg from 'sequelize'
 import DATA_BASE from '../config/db.js'
 
+const { DataTypes } = pkg
+
 const Admin = DATA_BASE.define('admin', {
-  user: {
+  username: {
     type: DataTypes.STRING,
     allowNull: false,
     primaryKey: true,

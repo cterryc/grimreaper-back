@@ -1,25 +1,20 @@
-import bcrypt from 'bcrypt'
-// import { matchLogin } from '../helpers/login.helpers.js'
+import Admin from '../models/admin.models.js'
 
 export const postLogin = async (req, res, next) => {
-  const { user, password } = req.body
-  const admin = 'lunatik'
-  const pass = 'Lunatik321'
-  const clave = bcrypt.hash(pass, 10, function (_err, hash) {
-    console.log('esto es logIN', hash)
-  })
-  console.log('esto es logOUT', clave)
   try {
-    if (admin === user.toLowerCase() && pass === password) {
-      return res.status(200).send({ response: true })
+    const { user, password } = req.body
+
+    const admin = await Admin.findOne({ where: { username: user } })
+    if (!admin) {
+      return res.status(401).send({ error: 'Usuario no Encontrado' })
     }
-    throw new Error('Usuario no Encontrado')
-    // const match = await matchLogin(user, password)
-    // if (match) {
-    //   res.status(200).send(match)
-    // }
+
+    if (admin.password !== password) {
+      return res.status(401).send({ error: 'Usuario no Encontrado' })
+    }
+
+    res.status(200).send({ response: true })
   } catch (error) {
-    console.log('esto es error ==>', error)
     next(error)
   }
 }
