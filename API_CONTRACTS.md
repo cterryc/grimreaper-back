@@ -82,6 +82,14 @@ Elimina un personaje Main y todos sus Alters asociados.
 name: string (nombre del personaje Main)
 ```
 
+**Body:**
+```json
+{
+  "user": "lunatik",
+  "password": "Lunatik321"
+}
+```
+
 #### Response
 
 **200 OK - Éxito**
@@ -95,6 +103,13 @@ name: string (nombre del personaje Main)
 ```json
 {
   "error": "Personaje Main no encontrado"
+}
+```
+
+**401 Unauthorized - Credenciales inválidas**
+```json
+{
+  "error": "Credenciales inválidas"
 }
 ```
 
@@ -143,6 +158,14 @@ Elimina un personaje Alter.
 name: string (nombre del Alter)
 ```
 
+**Body:**
+```json
+{
+  "user": "lunatik",
+  "password": "Lunatik321"
+}
+```
+
 #### Response
 
 **200 OK - Éxito**
@@ -156,6 +179,13 @@ name: string (nombre del Alter)
 ```json
 {
   "error": "Alter no encontrado"
+}
+```
+
+**401 Unauthorized - Credenciales inválidas**
+```json
+{
+  "error": "Credenciales inválidas"
 }
 ```
 
@@ -177,7 +207,9 @@ Content-Type: application/json
 **Body:**
 ```json
 {
-  "body": "<XML_STRING>"
+  "body": "<XML_STRING>",
+  "user": "lunatik",
+  "password": "Lunatik321"
 }
 ```
 
@@ -251,6 +283,13 @@ Ambos formatos son soportados gracias a `mergeAttrs: true` en el parser xml2js.
 ```json
 {
   "error": "Clase inválida: {nombreClase} en personaje {nombrePersonaje}. Clases válidas: Warlock, Death Knight, Hunter, Shaman, Druid, Warrior, Mage, Paladin, Rogue, Priest"
+}
+```
+
+**401 Unauthorized - Credenciales inválidas**
+```json
+{
+  "error": "Credenciales inválidas"
 }
 ```
 

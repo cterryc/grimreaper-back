@@ -4,6 +4,8 @@ export const postLogin = async (req, res, next) => {
   try {
     const { user, password } = req.body
 
+    console.log(user, password)
+
     const admin = await Admin.findOne({ where: { username: user } })
     if (!admin) {
       return res.status(401).send({ error: 'Usuario no Encontrado' })
