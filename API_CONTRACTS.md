@@ -385,7 +385,7 @@ Content-Type: application/json
 
 ### POST `/login/change-password`
 
-Cambia la contraseña de un administrador.
+Cambia la contraseña de un administrador usando un token de recuperacion.
 
 #### Request
 
@@ -397,7 +397,8 @@ Content-Type: application/json
 **Body:**
 ```json
 {
-  "user": "lunatik",
+  "email": "admin@example.com",
+  "token": "123456",
   "newPassword": "nuevaContraseña123"
 }
 ```
@@ -407,7 +408,19 @@ Content-Type: application/json
 **200 OK - Éxito**
 ```json
 {
-  "message": "Contraseña actualizada correctamente"
+  "message": "Contrasena actualizada correctamente"
+}
+```
+
+**400 Bad Request - Token invalido o expirado**
+```json
+{
+  "error": "Token invalido"
+}
+```
+```json
+{
+  "error": "Token expirado"
 }
 ```
 
@@ -417,6 +430,41 @@ Content-Type: application/json
   "error": "Usuario no encontrado"
 }
 ```
+
+---
+
+### POST `/login/forgot-password`
+
+Envía un token de 6 dígitos al email del administrador para recuperar su contraseña.
+
+#### Request
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "email": "admin@example.com"
+}
+```
+
+#### Response
+
+**200 OK - Éxito**
+```json
+{
+  "message": "Si el email existe, se enviara un token"
+}
+```
+
+#### Notas
+
+- El token es válido por 1 hora
+- El email solo se envía si el usuario existe en la base de datos
+- Por seguridad, siempre retorna el mismo mensaje aunque el email no exista
 
 ---
 

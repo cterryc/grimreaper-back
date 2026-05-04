@@ -13,6 +13,18 @@ const Admin = DATA_BASE.define('admin', {
   password: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  resetToken: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  resetTokenExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 })
 
