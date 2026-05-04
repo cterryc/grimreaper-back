@@ -247,6 +247,13 @@ Ambos formatos son soportados gracias a `mergeAttrs: true` en el parser xml2js.
 }
 ```
 
+**400 Bad Request - Clase inválida**
+```json
+{
+  "error": "Clase inválida: {nombreClase} en personaje {nombrePersonaje}. Clases válidas: Warlock, Death Knight, Hunter, Shaman, Druid, Warrior, Mage, Paladin, Rogue, Priest"
+}
+```
+
 **500 Internal Server Error - Error de base de datos**
 ```json
 {

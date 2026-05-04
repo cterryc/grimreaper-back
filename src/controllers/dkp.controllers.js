@@ -31,6 +31,16 @@ export const postDkps = (req, res) => {
           allCharacters = [allCharacters]
         }
 
+        const validClasses = ['Warlock', 'Death Knight', 'Hunter', 'Shaman', 'Druid', 'Warrior', 'Mage', 'Paladin', 'Rogue', 'Priest']
+
+        for (const ele of allCharacters) {
+          if (ele.class && !validClasses.includes(ele.class)) {
+            return res.status(400).send({
+              error: `Clase inválida: ${ele.class} en personaje ${ele.name}.\nClases válidas: ${validClasses.join(', ')}`
+            })
+          }
+        }
+
         const mainCharacters = []
         const alterCharacters = []
 
